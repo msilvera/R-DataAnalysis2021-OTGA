@@ -1,0 +1,376 @@
+
+---
+title: "Data to Support Fish Stock Assessment ('FSA')"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+---
+
+```{r paquetes, include=FALSE}
+library(flexdashboard)
+library(FSAdata)
+library(knitr)
+library(plyr)
+library(ggplot2)
+library(plotly)
+library(scales)
+```
+
+
+```{r db, include=FALSE}
+
+
+summary(InchLake2)
+
+data_fish <- InchLake2
+
+summary(data_fish)
+attach(data_fish)
+
+```
+
+
+Dashboard
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+###
+
+```{r}
+valueBox(caption = "Total data",
+         value = length(netID),
+         icon = "fa-database")
+```
+
+###
+
+```{r}
+
+valueBox(caption = "Total datos 2007",
+         value = length(species[year=="2007"]),
+         icon = "fa-database")
+```
+
+###
+
+```{r}
+
+valueBox(caption = "Total datos 2008",
+         value = length(species[year=="2008"]),
+         icon = "fa-database")
+```
+
+Row
+-----------------------------------------------------------------------
+
+###
+```{r}
+
+valueBox(caption = "Bluegill",
+         value = length(species[species=="Bluegill"]),
+         icon = "fa-fish",
+         color = "dodgerblue")
+```
+
+
+
+###
+```{r}
+
+valueBox(caption = "Bluntnose Minnow",
+         value = length(species[species=="Bluntnose Minnow"]),
+         icon = "fa-fish",
+         color = "deepskyblue")
+```
+
+###
+```{r}
+
+valueBox(caption = "Largemouth Bass",
+         value = length(species[species=="Bluntnose Minnow"]),
+         icon = "fa-fish",
+         color = "dodgerblue")
+```
+
+
+###
+```{r}
+
+valueBox(caption = "Iowa Darter",
+         value = length(species[species=="Iowa Darter"]),
+         icon = "fa-fish",
+         color = "deepskyblue")
+```
+
+###
+```{r}
+
+valueBox(caption = "Black Crappie",
+         value = length(species[species=="Black Crappie"]),
+         icon = "fa-fish",
+         color = "dodgerblue")
+```
+
+Row
+-----------------------------------------------------------------------
+
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Bluegill fish length",
+         value = percent(sd(length[species=="Bluegill"])/mean(length[species=="Bluegill"])),
+         icon = "fa-ruler",
+         color = "dodgerblue")
+```
+
+
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Bluntnose Minnow fish length",
+         value = percent(sd(length[species=="Bluntnose Minnow"])/mean(length[species=="Bluntnose Minnow"])),
+         icon = "fa-ruler",
+         color = "deepskyblue")
+```
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Largemouth Bass fish length",
+         value = percent(sd(length[species=="Largemouth Bass"])/mean(length[species=="Largemouth Bass"])),
+         icon = "fa-ruler",
+         color = "dodgerblue")
+```
+
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Iowa Darter fish length",
+         value = percent(sd(length[species=="Iowa Darter"])/mean(length[species=="Iowa Darter"])),
+         icon = "fa-ruler",
+         color = "deepskyblue")
+```
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Black Crappie fish length",
+         value = percent(sd(length[species=="Black Crappie"])/mean(length[species=="Black Crappie"])),
+         icon = "fa-ruler",
+         color = "dodgerblue")
+```
+
+Row
+-----------------------------------------------------------------------
+
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Bluegill fish weight",
+         value = percent(sd(weight[species=="Bluegill"])/mean(weight[species=="Bluegill"])),
+         icon = "fa-ruler",
+         color = "dodgerblue")
+```
+
+
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Bluntnose Minnow fish weight",
+         value = percent(sd(weight[species=="Bluntnose Minnow"])/mean(weight[species=="Bluntnose Minnow"])),
+         icon = "fa-ruler",
+         color = "deepskyblue")
+```
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Largemouth Bass fish weight",
+         value = percent(sd(weight[species=="Largemouth Bass"])/mean(weight[species=="Largemouth Bass"])),
+         icon = "fa-ruler",
+         color = "dodgerblue")
+```
+
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Iowa Darter fish weight",
+         value = percent(sd(weight[species=="Iowa Darter"])/mean(weight[species=="Iowa Darter"])),
+         icon = "fa-ruler",
+         color = "deepskyblue")
+```
+
+###
+```{r}
+
+valueBox(caption = "coef. Variation Black Crappie fish weight",
+         value = percent(sd(weight[species=="Black Crappie"])/mean(weight[species=="Black Crappie"])),
+         icon = "fa-ruler",
+         color = "dodgerblue")
+```
+
+
+Row
+-------------------------------------
+
+### Pie Chart - % of Species in database
+
+```{r}
+library(dplyr)
+
+
+pie_data <-aggregate(data_fish$fishID, by=list(data_fish$species), FUN=length)
+pie_data <-rename(pie_data, Specie = Group.1)
+pie_data <-rename(pie_data, Amount = x)
+
+
+pie_chart <- ggplot(pie_data, aes(x="", y=Amount, fill=Specie)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0)+
+  geom_text(aes(label = paste0(round(Amount/length(data_fish),0),"%")), position = position_stack(vjust=0.5),check_overlap = TRUE) +
+  labs(x = NULL, y = NULL, fill = NULL) +
+  theme_classic() +
+  theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank())
+
+
+pie_chart 
+
+
+```
+
+
+Row
+-----------------------------------------------------------------------
+### Figura 1. Distribucion del largo total (in)
+```{r}
+
+f1a <- ggplot(data=data_fish,
+       aes(x=length, fill=species, color=species))+
+  geom_histogram(alpha=0.4, position = "identity")+
+  theme_classic()+
+  labs(x="Total length(inches)", y="Frecuency")
+
+
+mean_tl <-ddply(data_fish,
+                "species", summarise,mean_species=mean(length))
+mean_tlx <-mean_tl$mean_species
+meantl_species <-mean_tl$species
+#f1a 
+f1b <- f1a +
+   geom_segment(data=mean_tl,
+               aes(x=mean_tlx,xend=mean_tlx,y=0, yend=100, color=meantl_species))+
+  geom_text(data=mean_tl, size=3,
+               aes(x=mean_tlx-5,y=c(30,35,40,45,50,55,60,65,70), 
+                color=meantl_species,
+                label=paste("Mean =", round(mean_tl$mean_species,2))))
+
+#lo hago interactivo
+ggplotly(f1b, height=400, width=450)
+
+```
+### Figura 2. Longitud  (mm) por especie
+```{r}
+
+xlab1 <- list(title="Total length (inches)")
+plot_ly(data = data_fish,
+        x = ~ length,
+        y= ~ species,
+        type="box",
+        color= ~ species,
+       height=400, 
+       width=450 )%>% layout(xaxis=xlab1)
+
+
+```
+
+Row
+-----------------------------------------------------------------------
+### Figura 3. Distribucion del peso total (g)
+```{r}
+
+f3a <- ggplot(data=data_fish,
+       aes(x=weight, fill=species, color=species))+
+  geom_histogram(alpha=0.4, position = "identity")+
+  theme_classic()+
+  labs(x="Total weight(g)", y="Frecuency")
+
+
+mean_tw <-ddply(data_fish,
+                "species", summarise,mean_species=mean(weight))
+mean_twx <-mean_tw$mean_species
+meantw_species <-mean_tw$species
+#f1a 
+f3b <- f3a +
+   geom_segment(data=mean_tw,
+               aes(x=mean_twx,xend=mean_twx,y=0, yend=100, color=meantw_species))+
+  geom_text(data=mean_tw, size=3,
+               aes(x=mean_twx-5,y=c(30,35,40,45,50,55,60,65,70), 
+                color=meantw_species,
+                label=paste("Mean =", round(mean_tl$mean_species,2))))
+
+#lo hago interactivo
+ggplotly(f3b, height=400, width=450)
+
+```
+### Figura 4. Peso  (gr) por especie
+```{r}
+
+xlab2 <- list(title="Total Weight (g)")
+plot_ly(data = data_fish,
+        x = ~ weight,
+        y= ~ species,
+        type="box",
+        color= ~ species,
+       height=400, 
+       width=450 )%>% layout(xaxis=xlab2)
+
+
+```
+
+
+Row
+-----------------------------------------------------------------------
+### Figura 5. Peso (gr) por longitud
+```{r}
+
+xlab3 <- list(title="Total Length (inches)")
+ylab3 <- list(title="Total weight (g)")
+plot_ly(data = data_fish,
+        x = ~ as.factor(length),
+        y= ~ weight,
+        type="box",
+        color= ~ species,
+       height=400, 
+       width=600 )%>% layout(xaxis=xlab3, yaxis=ylab3)
+
+
+```
+
+-----------------------------------------------------------------------
+### Figura 6. Relación Talla-Peso
+```{r}
+
+f6 <- ggplot(data=data_fish,
+             aes(x=weight, y=length))+
+    geom_point(aes(color=data_fish$year,shape=species,alpha=0.4))+
+  theme_classic()+
+  labs(x="Total weight(g)", y="length (inches)")+
+  scale_color_gradientn(colours=topo.colors(20))+
+  scale_shape_discrete(NULL)+
+  scale_shape_manual(values=c(4,29,30,53,23,53,64,53,23)) 
+
+ggplotly(f6, height=400,width=600)
+
+
+```
